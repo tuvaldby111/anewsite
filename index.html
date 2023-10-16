@@ -49,7 +49,6 @@
             width: 50%;
             background: linear-gradient(
                 to bottom,
-
                 #0073e6 30%,
                 #ffffff 20%,
                 #ffffff 70%,
@@ -57,7 +56,6 @@
             );
             left: 0;
         }
-
         @keyframes pulse {
             0% {
                 transform: scale(1);
@@ -72,8 +70,6 @@
                 box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
             }
         }
-
-
         .hamas {
             width: 50%;
             background: linear-gradient(
@@ -102,13 +98,10 @@
             position: relative;
             overflow: hidden;
             animation: pulse 2s ease infinite;
-            width: 200px; /* Set the width as per your preference */
-
-
-
+            width: 200px;
         }
         .isr-but {
-            width: 200px; /* Set the width as per your preference */
+            width: 200px;
             background-color: #4c7faf;
             border: none;
             color: white;
@@ -124,7 +117,6 @@
             position: relative;
             overflow: hidden;
             animation: pulse 2s ease infinite;
-
         }
         .isr-but:hover {
             background-color: #455da0;
@@ -177,14 +169,16 @@
             border-right: 25px solid black;
         }
         .info-text {
-        margin: 30px;
-        text-align: center;
-        font-size: 16px;
-        color: #555;
-    }
+            margin: 30px;
+            text-align: center;
+            font-size: 16px;
+            color: #555;
+        }
     </style>
 </head>
+
 <body>
+
     <div class="container">
         <div class="button__effect" id="buttonEffect"></div>
         <div class="corner-effect top-left" id="topLeftEffect"></div>
@@ -199,34 +193,64 @@
             <div class="israel" id="israel" style="width: 50%;"></div>
             <div class="hamas" id="hamas" style="width: 50%;"></div>
         </div>
-        
+
         <br>
         <button class="isr-but" onclick="vote('israel'); createRipple(event); showEffect('#buttonEffect', 'rgba(0, 0, 255, 0.7)')">Support Israel</button>
         <button class="hamas-but" onclick="vote('hamas'); createRipple(event); showEffect('#buttonEffect', 'rgba(0, 0, 0, 0.7)')">Support Palestine</button>
     </div>
 
+    <script src="https://www.back4app.com/js/back4app-parse-1.14.1.min.js"></script>
+    <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+
     <script>
-        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+        Parse.initialize("Y1dGvcnk8cYdKa49qMsIzJFahUZkb8xmWJPDXd2D", "SOkJs6dUZJd7f3H9K4Wx0xAsjabqW0kfn3YJJkme");
+        Parse.serverURL = 'https://parseapi.back4app.com/';
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyClksXRZXzkizFu-OO1O0KhocJA7kis2yk",
-  authDomain: "theboard-19b1b.firebaseapp.com",
-  projectId: "theboard-19b1b",
-  storageBucket: "theboard-19b1b.appspot.com",
-  messagingSenderId: "902117319673",
-  appId: "1:902117319673:web:fdf32bcc83dfc9cb29d328",
-  measurementId: "G-LMNHRZ06PJ"
-};
+        const VoteCount = Parse.Object.extend("VoteCount");
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+        function fetchVotes() {
+            var query = new Parse.Query(VoteCount);
+            query.first().then((voteCount) => {
+                if (voteCount) {
+                    var israelVotes = voteCount.get("IsraelVotes");
+                    var palestineVotes = voteCount.get("PalestineVotes");
+                    // Display or update the vote counts in your UI
+                } else {
+                    // Handle the case where the VoteCount object is not found
+                }
+            }).catch((error) => {
+                // Handle any errors that occur during the fetch operation
+            });
+        }
+
+        function updateVotes(voteType) {
+            var query = new Parse.Query(VoteCount);
+            query.first().then((voteCount) => {
+                if (voteCount) {
+                    if (voteType === 'Israel') {
+                        voteCount.increment("IsraelVotes");
+                    } else if (voteType === 'Palestine') {
+                        voteCount.increment("PalestineVotes");
+                    }
+                    voteCount.save().then(() => {
+                        // Perform any necessary UI updates after the votes are successfully updated
+                    }).catch((error) => {
+                        // Handle any errors that occur during the save operation
+                    });
+                } else {
+                    // Handle the case where the VoteCount object is not found
+                }
+            }).catch((error) => {
+                // Handle any errors that occur during the fetch operation
+            });
+        }
+
+        fetchVotes();
+    </script>
+
+
+    <script>
+        // Add the rest of the JavaScript code provided earlier in this conversation
         function vote(side) {
             var israelLine = document.getElementById('israel');
             var hamasLine = document.getElementById('hamas');
@@ -258,7 +282,6 @@ const analytics = getAnalytics(app);
                 body.style.backgroundImage = "none";
             }
         }
-
         function createRipple(event) {
             const button = event.currentTarget;
             const circle = document.createElement("span");
@@ -282,6 +305,9 @@ const analytics = getAnalytics(app);
                 effect.style.display = 'none';
             }, 500);
         }
+        fetchVotes();
+
     </script>
+
 </body>
 </html>
